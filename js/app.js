@@ -23,19 +23,28 @@ document.addEventListener("DOMContentLoaded", ()=>{
     monedasSelect.addEventListener("change", leerValor);
 });
 
-function consultarCriptomonedas() {
+async function consultarCriptomonedas() {
 
     const url = "https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD";
 
 
-    fetch(url)
-    .then((result) => {
-        return result.json();
-    }).then((resultado) => {
-        return obtenerCriptomonedas(resultado.Data); //Le pasamos el resultado para que nos traiga el array de criptos para el select
-    }).then((criptomonedas =>{
-        selectCriptomonedas(criptomonedas); //Manejamos el el éxito del resolve con un .then
-    }));
+    // fetch(url)
+    // .then((result) => {
+    //     return result.json();
+    // }).then((resultado) => {
+    //     return obtenerCriptomonedas(resultado.Data); //Le pasamos el resultado para que nos traiga el array de criptos para el select
+    // }).then((criptomonedas =>{
+    //     selectCriptomonedas(criptomonedas); //Manejamos el éxito del resolve con un .then
+    // }));
+
+    try {
+        const result = await fetch(url);
+        const response = await result.json();
+        const criptomonedas = await obtenerCriptomonedas(response.Data);
+        selectCriptomonedas(criptomonedas);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function selectCriptomonedas(criptomonedas) {
@@ -92,7 +101,7 @@ function mostrarAlerta(mensaje) {
 
 }
 
-function consultarApi() {
+async function consultarApi() {
     const {moneda, criptomoneda} = objBusqueda;
 
     const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`;
@@ -100,14 +109,24 @@ function consultarApi() {
     //Muestra el spinner
     mostrarSpinner();
 
-        setTimeout(() => {
-            fetch(url)
-            .then((result) => {
-                return result.json();
-            }).then((cotizacion) => {
-                mostrarCotizaciónHTML(cotizacion.DISPLAY[criptomoneda][moneda]); //Hace que nuestro objeto sea dinámico también
-            });
-        }, 1000);
+
+
+
+            // fetch(url)
+            // .then((result) => {
+            //     return result.json();
+            // }).then((cotizacion) => {
+            //     mostrarCotizaciónHTML(cotizacion.DISPLAY[criptomoneda][moneda]); //Hace que nuestro objeto sea dinámico también
+            // });
+
+            try {
+                const result = await fetch(url);
+                const response = await result.json();
+                mostrarCotizaciónHTML(response.DISPLAY[criptomoneda][moneda]);
+            } catch (error) {
+                console.log(error);
+            }
+
     
 }
 
